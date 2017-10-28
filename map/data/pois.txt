@@ -1,0 +1,4 @@
+Alton Baker Dog Park, 44.055641, -123.070541
+Amazon Dog Park, 44.028516, -123.083972
+Skinner Butte Park, 44.060926, -123.096440
+Maurie Jacobs Park, 44.066139, -123.113285

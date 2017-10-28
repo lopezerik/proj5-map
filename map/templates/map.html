@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+ <meta charset='utf-8'>
+<title>&#x1F436; Bork Bork</title>
+
+  <!-- 'viewport' is used by bootstrap to respond to device size -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Javascript:  JQuery from a content distribution network (CDN) -->
+  <script
+     src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+  </script>
+
+  <!-- Bootstrap includes javascript and css  (must follow jquery) -->
+  <link rel="stylesheet"
+   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+   <script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+   </script>
+</head>
+
+  <!-- Our style sheet -->
+  <link rel="stylesheet" href="/static/css/my_map.css" />
+
+<body>
+<!-- bootstrap requires a 'container' div around content -->
+<div class="container">
+
+<h1 id="header">&#x1F436; Eugene Dog Parks &#x1F436;</h1>
+  <p id="more_info">&#x1F415; This map is designed to display a few dog parks around the Eugene area &#x1F415;<p>
+
+<div id="mapid"></div>
+
+<script>
+  /* create map */
+  function initMap(){
+    var map = new google.maps.Map(document.getElementById('mapid'), {
+      zoom: 13,
+      center: {lat: 44.0521, lng: -123.0868}
+    });
+
+    /* create starter marker */
+    var marker = new google.maps.Marker({
+      position: {lat: 44.0521, lng: -123.0868},
+      map: map,
+    });
+    
+    /* geocoder for reverse geocoding */
+    var geocoder = new google.maps.Geocoder;
+    var infowindow = new google.maps.InfoWindow;
+    infowindow.setContent("&#x1F436;<b>Hello!</b> &#x1F436;");
+    infowindow.open(map, marker);
+    /* call our helper function, adds our POIs */
+    render_poi(map);
+
+    /* add listener to marker */
+    marker.addListener('click', function(){
+      infowindow.open(map, marker);
+    });
+    
+    /* listener for map to add markers */
+    map.addListener('click', function(e){
+      revGeocode(geocoder, map, infowindow, e.latLng, marker);
+    });
+
+  }
+  
+  /* reverse geocode from google api */
+  function revGeocode(geocoder, map, infowindow, latlng, marker){
+    geocoder.geocode({'location': latlng}, function(results, status){
+      if(status == 'OK'){
+        if(results[0]){
+          /* move marker to spot clicked and add info */
+          marker.setPosition(latlng);
+          infowindow.setContent(results[0].formatted_address);
+          infowindow.open(map, marker);
+        }
+      }
+    });
+  }
+  
+  /* adds our POIs from txt file */
+  function render_poi(map){
+    // Run when page is finished loading
+    $.getJSON("_render_poi",
+        function(data){
+            var table = data.result;
+            /* loop through results and add to map */
+            for(place in table){
+              var latlng = {lat: parseFloat(table[place][1]), lng: parseFloat(table[place][2])};
+              var info = new google.maps.InfoWindow;
+              /* set marker on map */
+              var marker = new google.maps.Marker({
+                position: latlng,
+                map: map
+              });
+              /* edit marker info with address*/
+              info.setContent(table[place][0]);
+              info.open(map, marker);
+              marker.addListener('click', function(){
+                info.open(map, marker);
+              });
+            }
+        }
+    );
+  }
+
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE&callback=initMap">
+</script>
+</div>
+</body> </html>
