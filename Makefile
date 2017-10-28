@@ -21,7 +21,7 @@ install: env credentials
 
 credentials: map/credentials.ini
 
-brevets/credentials.ini: 
+map/credentials.ini: 
 	echo "You must manually create credentials.ini"
 
 
